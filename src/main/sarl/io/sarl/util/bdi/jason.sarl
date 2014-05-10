@@ -1,0 +1,130 @@
+package io.sarl.util.bdi
+
+import io.sarl.core.*
+import io.sarl.util.bdi.jason.AgentArchitectureAdapter
+import io.sarl.lang.core.Agent
+import jason.asSemantics.Message
+import java.io.Reader
+import java.io.InputStreamReader
+import java.io.File
+import java.io.InputStream
+import java.io.FileInputStream
+
+event KQMLMessage {
+	var message : Message
+}
+
+event Perception {
+}
+
+capacity AgentSpeakReasoner {
+
+	def reasoningCycle
+	//	def parseAgentSpeak (stream : InputStream)
+	def loadAgentSpeak(fullPath : String)
+}
+
+behavior JasonSARLEventsMapperBehavior {
+	requires AgentSpeakReasoner
+	uses AgentSpeakReasoner
+
+	new(ag : Agent) {
+		super(ag)
+	}
+
+	on Perception {
+	}
+
+	on KQMLMessage {
+	//Make this a Message
+
+	}
+}
+
+skill JasonAgentSpeakReasonerSkill implements AgentSpeakReasoner {
+	var adapter : AgentArchitectureAdapter
+
+	def install {
+		adapter = new AgentArchitectureAdapter(owner)
+	}
+
+	def uninstall {
+	/* Check with Jomi if this is how I should stop it */
+		adapter.stop
+		adapter = null
+	}
+
+	def reasoningCycle {
+		adapter.reason
+		if(!adapter.running) {
+			getSkill(Lifecycle).killMe
+		}
+	}
+
+	/* Loads an ASL file from the absolutePath
+	 * This should be replaced with a more generic input (e.g. InputStream) but in seems that jason does not allow this at the moment
+	 */
+	def loadAgentSpeak(fullPath : String) {
+		adapter.load(fullPath)
+	}
+}
+
+capacity Logging {
+
+	def debug(s : String)
+
+	def info(s : String)
+}
+
+skill BasicConsoleLogging implements Logging {
+
+	def debug(s : String) {
+		System.out.println("DEBUG [" + owner.ID + "]: " + s)
+
+	}
+
+	def info(s : String) {
+		System.out.println("INFO [" + owner.ID + "]: " + s)
+	}
+}
+agent BDIAgent {
+	uses Schedules, AgentSpeakReasoner, Logging
+
+	on Initialize {
+		val aslFilePath = occurrence.parameters.get(0) as String
+		
+		/* set the skill for logging */
+		setSkill(Logging, new BasicConsoleLogging)
+
+		/* set the reasoner implemented using Jason's Reasoning Engine*/
+		setSkill(AgentSpeakReasoner, new JasonAgentSpeakReasonerSkill)
+
+		/* Load the AgentSpeak File */
+		loadAgentSpeak(aslFilePath.expandPath)
+
+		/* Execute the reasoningCycle every 100 milliseconds */
+		every(100) [reasoningCycle]
+	}
+
+	/* To map doSomething with Integer coming form the asl definition */
+	def doSomething(value : Integer) {
+		System.out.println("BDIAgent is doing something with parameter integer: " + value)
+	}
+
+	def expandPath(relativePath : String) : String {
+		val f = new File(relativePath)
+		f.absolutePath
+	}
+}
+
+/* This agent starts other BDI agents.
+ * Here we could load mas2j files.
+ */
+agent BDIDemoLauncher {
+	
+	uses DefaultContextInteractions
+	
+	on Initialize {
+		BDIAgent.spawn(#["src/main/resources/demo.asl"])
+	}
+}
