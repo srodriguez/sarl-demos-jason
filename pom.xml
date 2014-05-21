@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>io.sarl.util</groupId>
-  <artifactId>io.sarl.util.bdi</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>io.sarl.util</groupId>
+	<artifactId>io.sarl.util.bdi</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+
 	<name>SARL BDI Integration</name>
 	<url>http://www.sarl.io/</url>
 	<inceptionYear>2014</inceptionYear>
@@ -84,6 +85,19 @@
 			<groupId>io.janusproject</groupId>
 			<artifactId>io.janusproject.kernel</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>net.sf.jason</groupId>
+			<artifactId>jason</artifactId>
+			<version>1.4.0a</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.1</version>
+		</dependency>
+
 
 	</dependencies>
 
@@ -261,6 +275,15 @@
 		</pluginManagement>
 
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -572,5 +595,5 @@
 			<url>file:///var/www/sarl-maven-repository/</url>
 		</snapshotRepository>
 	</distributionManagement>
-  
+
 </project>
