@@ -14,9 +14,19 @@ import jason.asSyntax.VarTerm;
 
 import java.util.Map;
 
+/**
+ * Conversion Utils.
+ *
+ * see c4jason.JavaLibrary for original code.
+ *
+ * @author $Author: srodriguez$
+ * @version $FullVersion$
+ * @mavengroupid $GroupId$
+ * @mavenartifactid $ArtifactId$
+ */
 public class ASUtils {
 
-	public Object termToObject(Term t) {
+	public static Object termToObject(Term t) {
 		// System.out.println(">> "+t);
 		if (t instanceof VarTerm) {
 			return null;// should not happen! termToObject(var.getValue());
@@ -37,14 +47,14 @@ public class ASUtils {
 			} catch (NoValueException e) {
 				e.printStackTrace();
 			}
-			if (((byte) d) == d) {
-				return (byte) d;
-			} else if (((int) d) == d) {
+			 if (((int) d) == d) {
 				return (int) d;
 			} else if (((float) d) == d) {
 				return (float) d;
 			} else if (((long) d) == d) {
 				return (long) d;
+			} else if (((byte) d) == d) {
+				return (byte) d;
 			} else {
 				return d;
 			}
@@ -68,7 +78,7 @@ public class ASUtils {
 	/**
 	 * Convert Java Object into a Jason term
 	 */
-	public Term objectToTerm(Object value) throws Exception {
+	public static Term objectToTerm(Object value) throws Exception {
 		if (value == null) {
 			return ASSyntax.createVar("_");
 		} else if (value instanceof Term) {
@@ -105,7 +115,7 @@ public class ASUtils {
 				tail = tail.append(pair);
 			}
 			return l;
-		} 
+		}
 		//Seems to be Cartago specific code
 //		else if (value instanceof ToProlog) {
 //			return ASSyntax.parseTerm(((ToProlog) value).getAsPrologStr());
@@ -124,10 +134,12 @@ public class ASUtils {
 //			return st;
 //		}
 //		return registerDynamic(value);
-		throw new IllegalArgumentException("Can not transform "+value.toString()+ " to Term");
+		//try a string conversion
+		return objectToTerm(value.toString());
+		//throw new IllegalArgumentException("Can not transform "+value.toString()+ " to Term");
 	}
 
-	public Term[] objectArray2termArray(Object[] values) throws Exception {
+	public static Term[] objectArray2termArray(Object[] values) throws Exception {
 		Term[] result = new Term[values.length];
 		for (int i = 0; i < values.length; i++)
 			result[i] = objectToTerm(values[i]);

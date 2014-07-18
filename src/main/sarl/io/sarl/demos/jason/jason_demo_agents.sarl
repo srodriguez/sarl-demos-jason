@@ -1,0 +1,114 @@
+package io.sarl.demos.jason
+
+import io.sarl.core.Behaviors
+import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Initialize
+import io.sarl.core.Schedules
+import io.sarl.lang.core.Event
+import io.sarl.util.bdi.jason.AgentSpeakReasoner
+import io.sarl.util.bdi.jason.JasonAgentSpeakReasonerSkill
+import io.sarl.util.bdi.jason.KQMLMessage
+import jason.asSemantics.Message
+import java.io.File
+import java.util.Random
+
+
+event Perception {
+	var number : Integer
+}
+
+/*************************************
+ * Agents
+ *************************************/
+
+/*
+  * Base BDI Agent using an AgentSpeak file to
+  * define its behavior.
+  * The ASL file is passed as parameter on Initialize
+  *
+  */
+agent BDIAgent {
+	uses Schedules, AgentSpeakReasoner, Logging
+
+	on Initialize {
+		val aslFilePath = occurrence.parameters.get(0) as String
+
+		/* set the skill for logging (just for demo purposes)*/
+		setSkill(Logging, new BasicConsoleLogging)
+
+		/* set the reasoner implemented using Jason's Reasoning Engine*/
+		setSkill(AgentSpeakReasoner, new JasonAgentSpeakReasonerSkill)
+
+		/* Load the AgentSpeak File */
+		loadAgentSpeak(aslFilePath.expandPath)
+
+		/* Execute the reasoningCycle every 100 milliseconds */
+		every(100) [reasoningCycle]
+
+	}
+
+	/*
+	 * Ensures that events on SARL are passed to BDI Knowledge Base.
+	 * KQMLMessage events are reserved for AgentSpeak send.
+	 */
+	on Event [occurrence != typeof(KQMLMessage)] {
+		perceive(occurrence)
+	}
+
+	on KQMLMessage {
+		println(occurrence.message)
+	}
+
+	/* The load the asl file. */
+	def expandPath(relativePath : String) : String {
+		val f = new File(relativePath)
+		f.absolutePath
+	}
+
+}
+
+agent KQMLSender {
+	uses Schedules, DefaultContextInteractions
+
+	on Initialize {
+		every(2000) [emit(new KQMLMessage => [message = new Message()])]
+	}
+}
+
+/*************************************************************************
+ * Launchers
+ * These Agents only launch DBIAgents with different ASL files.
+ * They are for convenience only. Demos can be launched from command line as well.
+ **************************************************************************/
+
+/*
+ * This agent starts other BDI agents.
+ * Here we could load mas2j files.
+ */
+agent DemoFactorial {
+	uses DefaultContextInteractions
+
+	on Initialize {
+		BDIAgent.spawn(# [ "src/main/resources/factorial.asl" ])
+	}
+}
+
+agent DemoSARLEvents {
+	uses DefaultContextInteractions, Behaviors, Schedules
+	val random = new Random()
+
+	on Initialize {
+		BDIAgent.spawn(# [ "src/main/resources/sarl_events_perception.asl" ])
+
+		/* Generate a random Perception every second.
+		 * Emit the event in the Def. Context's Default Space
+		 * It will be perceived by the BDIAgent
+		 */
+		every(1000) [emit(randomPerception)]
+	}
+
+	def randomPerception : Perception {
+		new Perception => [number = random.nextInt(100 - 10) + 10];
+	}
+}
+

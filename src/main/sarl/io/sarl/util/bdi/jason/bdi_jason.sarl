@@ -1,0 +1,73 @@
+package io.sarl.util.bdi.jason
+
+import io.sarl.core.DefaultContextInteractions
+import io.sarl.util.bdi.jason.AgentArchitectureAdapter
+import io.sarl.core.Lifecycle
+import io.sarl.core.Schedules
+import io.sarl.lang.core.Event
+import jason.asSemantics.Message
+
+/*************************************
+ * Events
+ *************************************/
+event KQMLMessage {
+	var message : Message
+}
+
+
+/*************************************
+ * Capacities and Skills
+ *************************************/
+capacity AgentSpeakReasoner {
+
+	def reasoningCycle
+
+	def perceive(evt : Event)
+
+	def believe(literal : String)
+
+	def loadAgentSpeak(fullPath : String)
+}
+
+
+skill JasonAgentSpeakReasonerSkill implements AgentSpeakReasoner {
+	requires DefaultContextInteractions, Schedules
+	uses DefaultContextInteractions,Schedules
+
+	var adapter : AgentArchitectureAdapter
+	var reasoningCycleDelay = 100
+
+	def install {
+		adapter = new AgentArchitectureAdapter(owner,this)
+
+	}
+
+	def uninstall {
+	/* Check with Jomi if this is how I should stop it */
+		adapter.stop
+		adapter = null
+	}
+
+	def reasoningCycle {
+		adapter.reason
+		if(!adapter.running) {
+			getSkill(Lifecycle).killMe
+
+		}
+	}
+
+	def believe(literal : String){
+	   //adapter.enqueueBelief(literal)
+	}
+
+	def perceive(evt : Event) {
+		adapter.enqueuePerception(evt)
+	}
+
+	/* Loads an ASL file from the absolutePath
+	 * This should be replaced with a more generic input (e.g. InputStream) but in seems that jason does not allow this at the moment
+	 */
+	def loadAgentSpeak(fullPath : String) {
+		adapter.load(fullPath)
+	}
+}

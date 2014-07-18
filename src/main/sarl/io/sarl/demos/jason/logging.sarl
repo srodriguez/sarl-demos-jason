@@ -1,0 +1,26 @@
+package io.sarl.demos.jason
+
+/**
+ *
+ * A very simple logging capacity and Skill.
+ * Just to show AgentSpeak callback to SARL Actions.
+ *
+ */
+capacity Logging {
+
+	def debug(s : String)
+
+	def info(s : String)
+}
+
+skill BasicConsoleLogging implements Logging {
+
+	def debug(s : String) {
+		System.out.println("DEBUG [" + owner.ID + "]: " + s)
+	}
+
+	def info(s : String) {
+		System.out.println("INFO [" + owner.ID + "]: " + s)
+	}
+}
+
