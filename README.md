@@ -7,8 +7,8 @@ This demo show a (still) very simple way for creating a BDI reasoning agent usin
 * Load .asl (Agent Speak) files
 * Call actions defined in SARL agents and / or Capacities
 * Translate event into perceptions and Messages with the following rules (TODO) 
- * If the Event is of Type KQMLMessage it will be translated as an Message in Jason
- * Any other type of event will be translated as a perceptions see [[#SARL Event to Jason Perceptions translation]] and [[TODO]]
+  * If the Event is of Type KQMLMessage it will be translated as an Message in Jason
+  * Any other type of event will be translated as a perceptions see [#SARL Event to Jason Perceptions translation]] and [[TODO]]
  
 # Maven Notes
 
@@ -17,10 +17,38 @@ A copy of jason.jar (v1.4.0a) is distributed in the lib directory. To install it
 of this project.
 
 	
-	mvn install:install-file -Dfile=lib/jason-1.4.0a.jar \
+	$ mvn install:install-file -Dfile=lib/jason-1.4.0a.jar \
 	    -DgroupId=net.sf.jason -DartifactId=jason -Dversion=1.4.0a -Dpackaging=jar 
 	 
  
-## TODO
+Then you can build the BDI demos using:
+   
+    $ mvn clean install
+    
+    
+# Demos
 
-* Improve SARL grammar so that we can declare "on Event {}". In other to declare generic behaviors that will react to any event.
+All demos are defined in jason_demo_agents.sarl
+
+The BDIAgent is the base agent used in all demos, only the ASL file it loads on initialization changes.
+Basically, each demo launcher is just other agent used only to spawn BDIAgent's with the right files.
+
+You can run the demos using :
+
+
+   	$ ./janus <FQN of Demo Launcher>
+  
+  
+## Factorial
+A very simple factorial implemented in AgentSpeak 
+
+*ASL File* : src/main/resources/factorial.asl
+
+*Agent Demo Launcher*: `io.sarl.demos.jason.DemoFactorial`
+
+## SARL Events
+Simply print the events preceived.
+
+*ASL File* : src/main/resources/sarl_events_perception.asl
+
+*Agent Demo Launcher*: `io.sarl.demos.jason.DemoSARLEvents`
