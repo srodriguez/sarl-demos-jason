@@ -52,3 +52,15 @@ Simply print the events preceived.
 *ASL File* : src/main/resources/sarl_events_perception.asl
 
 *Agent Demo Launcher*: `io.sarl.demos.jason.DemoSARLEvents`
+
+## KQML Messages
+Two agents in ASL exchanging messages.
+
+*ASL Files* : 
+ 
+ * src/main/resources/communication/bob.asl
+ * src/main/resources/communication/maria.asl
+ 
+The ASL Agents are extracted from the communication demo of Jason without modification.
+
+*Agent Demo Launcher*: `io.sarl.demos.jason.DemoCommunication`
