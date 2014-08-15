@@ -26,6 +26,8 @@ capacity AgentSpeakReasoner {
 
 	def believe(literal : String)
 
+	def receiveMessage(msg : KQMLMessage)
+
 	def loadAgentSpeak(fullPath : String)
 }
 
@@ -57,11 +59,15 @@ skill JasonAgentSpeakReasonerSkill implements AgentSpeakReasoner {
 	}
 
 	def believe(literal : String){
-	   //adapter.enqueueBelief(literal)
+	   adapter.enqueueBelief(literal)
 	}
 
 	def perceive(evt : Event) {
 		adapter.enqueuePerception(evt)
+	}
+
+	def receiveMessage(msg : KQMLMessage) {
+		adapter.enqueueMessage(msg)
 	}
 
 	/* Loads an ASL file from the absolutePath

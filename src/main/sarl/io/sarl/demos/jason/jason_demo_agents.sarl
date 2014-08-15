@@ -42,8 +42,15 @@ agent BDIAgent {
 		/* Load the AgentSpeak File */
 		loadAgentSpeak(aslFilePath.expandPath)
 
+		/* Process and add any initial beliefs before first reasoningCycle */
+		if (occurrence.parameters.size > 1) {
+			val initialBeliefs = occurrence.parameters.get(1) as String
+			believe(initialBeliefs)
+		}
+
 		/* Execute the reasoningCycle every 100 milliseconds */
 		every(100) [reasoningCycle]
+
 
 	}
 
@@ -51,12 +58,12 @@ agent BDIAgent {
 	 * Ensures that events on SARL are passed to BDI Knowledge Base.
 	 * KQMLMessage events are reserved for AgentSpeak send.
 	 */
-	on Event [occurrence != typeof(KQMLMessage)] {
+	on Event [!(occurrence instanceof KQMLMessage) && !(occurrence instanceof Initialize)] {
 		perceive(occurrence)
 	}
 
 	on KQMLMessage {
-		println(occurrence.message)
+		receiveMessage(occurrence)
 	}
 
 	/* The load the asl file. */

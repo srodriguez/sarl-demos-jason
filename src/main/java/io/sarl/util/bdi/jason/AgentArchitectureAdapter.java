@@ -15,7 +15,6 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +68,10 @@ public class AgentArchitectureAdapter extends AgArch {
 	}
 
 	public void enqueueBelief(String belief) throws Exception {
-		events.put(Literal.parseLiteral(belief));
+
+		Literal beliefLietral = Literal.parseLiteral(belief);
+		log.info("Parsing belief String " + belief+" - Obtained literal : "+beliefLietral.toString() );
+		events.put(beliefLietral);
 	}
 
 	public void enqueueMessage(KQMLMessage msg) throws Exception {
@@ -146,14 +148,15 @@ public class AgentArchitectureAdapter extends AgArch {
 		KQMLMessage kqml = new KQMLMessage();
 		kqml.message = m;
 		Address aa = skill.getDefaultSpace().getAddress(UUID.fromString(m.getReceiver()));
-		//skill.emit(kqml, AddressScope.getScope(aa));
+		log.fine("Sending to "+aa+" KQMLMessage :"+kqml);
+		skill.emit(kqml, AddressScope.getScope(aa));
 	}
 
 	@Override
 	public void broadcast(jason.asSemantics.Message m) throws Exception {
 		KQMLMessage kqml = new KQMLMessage();
 		kqml.message = m;
-		//skill.emit(kqml);
+		skill.emit(kqml);
 	}
 
 	@Override
@@ -181,7 +184,6 @@ public class AgentArchitectureAdapter extends AgArch {
 						+ "-  Value = " + fields[i].get(e));
 				fields[i].setAccessible(true); // You might want to set modifier
 												// to public first.
-//				fieldsString = fieldsString + fields[i].get(e).toString();//Original try by seb
 				fieldsString = fieldsString + ASUtils.objectToTerm(fields[i].get(e)).toString();
 				if (i < (fields.length-2)) { //-2 since serialVersionUID will not be included
 					fieldsString = fieldsString + ",";

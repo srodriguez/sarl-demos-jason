@@ -1,0 +1,17 @@
+package io.sarl.demos.jason
+
+import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Behaviors
+import io.sarl.core.Schedules
+import io.sarl.core.Initialize
+
+agent DemoCommunication {
+	uses DefaultContextInteractions, Behaviors, Schedules
+
+	on Initialize {
+		val maria_id = BDIAgent.spawn(# [ "src/main/resources/communication/maria.asl" ])
+
+		BDIAgent.spawn(# [ "src/main/resources/communication/bob.asl", "receiver(\""+maria_id.toString+"\")" ])
+
+	}
+}
