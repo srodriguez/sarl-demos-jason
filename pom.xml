@@ -18,8 +18,8 @@
 		<year>2014</year>
 		<copyrighters>Sebastian RODRIGUEZ, Nicolas GAUD, Stéphane GALLAND</copyrighters>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sarl.version>0.1.0-SNAPSHOT</sarl.version>
-		<janus.version>2.0.0-SNAPSHOT</janus.version>
+		<sarl.version>0.1.0</sarl.version>
+		<janus.version>2.0.1.0</janus.version>
 
 	</properties>
 
@@ -79,6 +79,12 @@
 					<include>**/*.sarl</include>
 				</includes>
 			</resource>
+			<resource>
+				<directory>src/main/generated-sources/xtend</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
 		</resources>
 
 		<plugins>
@@ -123,48 +129,55 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.eclipse.xtext</groupId>
-				<artifactId>xtext-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
+				<groupId>io.sarl.maven</groupId>
+				<artifactId>sarl-maven-plugin</artifactId>
+				<version>${sarl.version}</version>
+				<extensions>true</extensions>
 				<configuration>
-					<compilerSourceLevel>1.7</compilerSourceLevel>
-					<compilerTargetLevel>1.7</compilerTargetLevel>
+					<source>1.7</source>
+					<target>1.7</target>
 					<encoding>UTF-8</encoding>
-					<languages>
-						<language>
-							<setup>io.sarl.lang.SARLStandaloneSetup</setup>
-							<outputConfigurations>
-								<outputConfiguration>
-									<outputDirectory>src/main/generated-sources/xtend/</outputDirectory>
-								</outputConfiguration>
-							</outputConfigurations>
-						</language>
-					</languages>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>io.sarl.lang</groupId>
-						<artifactId>io.sarl.lang</artifactId>
-						<version>${sarl.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>io.sarl.lang</groupId>
-						<artifactId>io.sarl.lang.core</artifactId>
-						<version>${sarl.version}</version>
-					</dependency>
-				</dependencies>
 			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+            <plugin>
+                <!-- to create a jar with all dependencies -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4.1</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>with-dependencies.xml</descriptor>
+                    </descriptors>
+                    <archive>
+                        <manifest>
+                            <mainClass>io.janusproject.Boot</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -256,58 +269,5 @@
 			</roles>
 		</developer>
 	</developers>
-
-	<!-- =================== -->
-	<!-- ==== Repositories === -->
-	<!-- =================== -->
-
-	<repositories>
-		<repository>
-			<id>io.sarl.maven</id>
-			<name>SARL Repository</name>
-			<url>http://maven.sarl.io/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-		<repository>
-			<id>io.janusproject.maven</id>
-			<name>Janus Repository</name>
-			<url>http://maven.janusproject.io/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>io.sarl.maven</id>
-			<name>SARL Repository</name>
-			<url>http://maven.sarl.io/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-		<pluginRepository>
-			<id>io.janusproject.maven</id>
-			<name>Janus Repository</name>
-			<url>http://maven.janusproject.io/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
 
 </project>
